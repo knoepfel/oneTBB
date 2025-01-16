@@ -14,10 +14,12 @@ Short-circuiting is desired for two reasons:
 We suggest creating new node types/templates that can support short-circuiting behavior, when receiving nullable messages.
 Nodes that would be candidates for this include:
 
-- `function_node`
-- `multifunction_node`
 - `async_node`
+- `composite_node`
+- `function_node`
 - `join_node`
+- `limiter_node`
+- `multifunction_node`
 
 We are not arguing to change the behavior of existing types....
 
@@ -36,13 +38,23 @@ Some nodes are not candidates for short-circuiting behavior:
 4. Note that the complement to the `join_node` is the `split_node`.
    Because the `split_node` does not satisfy the short-circuiting conditions above, it is not suitable for short-circuiting.
 
-Not sure yet:
-
-- `composite_node`
-
 ### Discussion regarding input node
 
 - `input_node` (perhaps supports a `std::variant<tbb::flow::stop, std::optional<T>>`)
+
+### Discussion regarding composite nodes
+
+We imagine composite nodes can usefully provide short-circuiting behavior.
+If a composite node's external input ports receive null messages, the encapsulated nodes need not execute, but a null message could be directly emitted from the composite node's external output ports.
+
+- [Provide two concrete examples based on Omnigraffle diagrams]
+
+### Discussion regarding limiter node
+
+Two use cases:
+
+- In one mode, don't ratchet up the count if a null message is received but just forward it (this is useful if the output is small for the null input)
+- In the other mode, discard a null message before the counter is even reached (this is useful if the output is large for the null input)
 
 > Short description of the idea proposed with explained motivation.
 >
